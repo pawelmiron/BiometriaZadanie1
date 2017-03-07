@@ -1,83 +1,96 @@
 package sample;
 
-import javafx.application.Application;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
-import javafx.scene.text.Text;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
-
 import java.awt.*;
+import java.io.FileInputStream;
+import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-//        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-//        primaryStage.setTitle("Biometria");
-//        primaryStage.setScene(new Scene(root, 600, 500));
-//        primaryStage.setResizable(true);
-//        primaryStage.show();
-        //creating a Group object
+    public void start(Stage stage) throws Exception {
 
-        Text text = new Text("Czolo poza kontrolo");
-        text.setFont(new Font(45));
-        text.setUnderline(true);
-        text.setX(50);
-        text.setY(50);
+        Text alfa = new Text("0");
+        alfa.setX(10);
+        alfa.setY(20);
+        Text red = new Text("0");
+        red.setX(10);
+        red.setY(40);
+        Text green = new Text("0");
+        green.setX(10);
+        green.setY(60);
+        Text blue = new Text("0");
+        blue.setX(10);
+        blue.setY(80);
+
+
+        EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+
+                ImageView imageView = (ImageView) e.getSource();
+                int x = (int) e.getSceneX();
+                int y = (int) e.getSceneY();
+
+                Color color = new Color(imageView.getImage().getPixelReader().getArgb(x,y)) ;
+
+                alfa.setText(String.valueOf(color.getAlpha()));
+                red.setText(String.valueOf(color.getRed()));
+                green.setText(String.valueOf(color.getGreen()));
+                blue.setText(String.valueOf(color.getBlue()));
+            }
+        };
 
 
 
+        //Creating an image
+        Image image = new Image(new FileInputStream("C:\\Users\\mironp\\Desktop\\manuel.jpg"));
 
-        Group group = new Group();
 
-        ObservableList list = group.getChildren();
 
-        Path path = new Path();
+        //Setting the image view
+        ImageView imageView = new ImageView(image);
 
-        //Moving to the starting point
-        MoveTo moveTo = new MoveTo(108, 71);
+        imageView.addEventFilter(MouseEvent.MOUSE_MOVED, eventHandler);
 
-        //Creating 1st line
-        LineTo line1 = new LineTo(321, 161);
+        //Setting the position of the image
+        imageView.setX(50);
+        imageView.setY(25);
 
-        //Creating 2nd line
-        LineTo line2 = new LineTo(126,232);
+        //setting the fit height and width of the image view
+        imageView.setFitHeight(455);
+        imageView.setFitWidth(500);
 
-        //Creating 3rd line
-        LineTo line3 = new LineTo(232,52);
+        //Setting the preserve ratio of the image view
+        imageView.setPreserveRatio(true);
 
-        //Creating 4th line
-        LineTo line4 = new LineTo(269, 250);
 
-        //Creating 4th line
-        LineTo line5 = new LineTo(108, 71);
+        Group root = new Group();
+        root.getChildren().add(alfa);
+        root.getChildren().add(red);
+        root.getChildren().add(green);
+        root.getChildren().add(blue);
+        root.getChildren().add(imageView);
 
-        //Adding all the elements to the path
-        path.getElements().add(moveTo);
-        path.getElements().addAll(line1, line2, line3, line4, line5);
 
-        list.add(text);
-        list.add(path);
-        //Creating a Scene by passing the group object, height and width
-        Scene scene = new Scene(group ,600, 300);
+        //Creating a scene object
+        Scene scene = new Scene(root, 600, 500);
 
-        //setting color to the scene
-        scene.setFill(Color.WHITE);
+        //Setting title to the Stage
+        stage.setTitle("Loading an image");
 
-        //Setting the title to Stage.
-        primaryStage.setTitle("Sample Application");
-
-        //Adding the scene to Stage
-        primaryStage.setScene(scene);
+        //Adding scene to the stage
+        stage.setScene(scene);
 
         //Displaying the contents of the stage
-        primaryStage.show();
+        stage.show();
     }
 
     @Override
